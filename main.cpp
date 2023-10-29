@@ -287,7 +287,6 @@ int main()
     Client cnt;
     //cout<<"Introdu datele de client (Nume, Adresa, Telefon, fiecare pe cate un rand):\n";
     in>>cnt; //supraincarcare operator citire
-    Comanda c; //constructor initializare fara param.
 
     //cout<<"1.Schimba date cont client\n2.Incepe cumparaturile\n";
     int x;
