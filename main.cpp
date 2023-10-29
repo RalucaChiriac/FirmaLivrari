@@ -8,18 +8,16 @@ ifstream in("tastatura.txt");
 
 class Produs
 {
-    char *nume;
+    string nume;
     float pret;
     int nr_bucati;
 public:
     ///constructori initializare
-    Produs(char*, float, int);
+    Produs(string, float, int);
     Produs();
     ///destructor
     ~Produs()
-    {
-        delete[] nume;
-    }
+    {}
     ///constructor copiere
     Produs(const Produs&);
     ///get si set
@@ -35,7 +33,7 @@ public:
     {
         nr_bucati=x;
     }
-    char* get_nume()
+    string get_nume()
     {
         return nume;
     }
@@ -51,19 +49,19 @@ Produs::Produs()
 {
     nr_bucati=0;
     pret=0;
-    nume=new char(50);
+    nume="";
 }
-Produs::Produs(char* prod, float p, int nr)
+Produs::Produs(string prod, float p, int nr)
 {
-    nume=new char(50);
-    strcpy(nume, prod);
+    nume="";
+    nume = prod;
     pret=p;
     nr_bucati=nr;
 }
 Produs::Produs(const Produs& p)  /// constructor de copiere
 {
-    nume=new char(50);
-    strcpy(this->nume, p.nume);
+    nume="";
+    this->nume = p.nume;
     this->pret=p.pret;
     this->nr_bucati=p.nr_bucati;
 }
@@ -72,8 +70,7 @@ Produs& Produs::operator=(Produs& ob)
 {
     if(this!=&ob)
     {
-        this->nume=new char[strlen(ob.nume)+1];
-        strcpy(this->nume, ob.nume);
+        nume = ob.nume;
         this->pret=ob.pret;
         this->nr_bucati=ob.nr_bucati;
     }
@@ -89,7 +86,7 @@ ostream &operator<<(ostream& out, const Produs &p)
 }
 istream &operator>>(istream &in, Produs &p)
 {
-    in.getline(p.nume, 50);
+    getline(in,p.nume);
     in>>p.nr_bucati>>p.pret;
     return in;
 }
@@ -205,12 +202,12 @@ void Comanda::afis_suma_plata()
 
 class Client
 {
-    char* nume_prenume, *adresa, *tel;
+    string nume_prenume, adresa, tel;
     Comanda* com;
 public:
     ///constructori initializare
     Client();
-    Client(char*, char*, char*, Comanda*);
+    Client(string, string, string, Comanda*);
     ///destructor
     ~Client() {
         delete com;
@@ -218,7 +215,7 @@ public:
 
     void deschide_comanda();
     void finalizeaza_comanda();
-    void editeaza_cont(char*, char*);
+    void editeaza_cont(string, string);
 
     Comanda* getter_comanda()
     {
@@ -234,21 +231,21 @@ public:
 
 Client::Client()
 {
-    nume_prenume=new char[50];
-    adresa=new char[50];
-    tel=new char[50];
+    nume_prenume="";
+    adresa="";
+    tel="";
     com = new Comanda();
 
 }
-Client::Client(char* np, char* adr, char* t, Comanda* cc)
+Client::Client(string np, string adr, string t, Comanda* cc)
 {
-    nume_prenume=new char[50];
-    adresa=new char[50];
-    tel=new char[50];
+    nume_prenume="";
+    adresa="";
+    tel="";
     com = new Comanda();
-    strcpy(nume_prenume, np);
-    strcpy(adresa, adr);
-    strcpy(tel, t);
+    nume_prenume=np;
+    adresa=adr;
+    tel=t;
     com = cc;
 }
 
@@ -264,10 +261,10 @@ void Client::finalizeaza_comanda()
     com->afis_suma_plata();
 
 }
-void Client::editeaza_cont(char *adresa, char *tel)
+void Client::editeaza_cont(string adresa, string tel)
 {
-    strcpy(this->tel, tel);
-    strcpy(this->adresa, adresa);
+    this->tel = tel;
+    this->adresa = adresa;
 }
 
 ostream &operator<<(ostream& out, const Client& cl)
@@ -278,9 +275,9 @@ ostream &operator<<(ostream& out, const Client& cl)
 
 istream &operator>>(istream &in, Client &cl)
 {
-    in.getline(cl.nume_prenume, 50);
-    in.getline(cl.adresa, 50);
-    in.getline(cl.tel, 50);
+    getline(in,cl.nume_prenume);
+    getline(in,cl.adresa);
+    getline(in, cl.tel);
     return in;
 }
 
