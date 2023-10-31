@@ -4,7 +4,7 @@
 #include <cstring>
 
 using namespace std;
-ifstream in("tastatura.txt");
+ifstream cit_fisier("tastatura.txt");
 
 class Produs
 {
@@ -84,11 +84,11 @@ ostream &operator<<(ostream& out, const Produs &p)
     cout<<endl;
     return out;
 }
-istream &operator>>(istream &in, Produs &p)
+istream &operator>>(istream &cit_fisier, Produs &p)
 {
-    getline(in,p.nume);
-    in>>p.nr_bucati>>p.pret;
-    return in;
+    getline(cit_fisier,p.nume);
+    cit_fisier>>p.nr_bucati>>p.pret;
+    return cit_fisier;
 }
 
 class Comanda
@@ -154,8 +154,10 @@ Comanda::Comanda()
     status="";
 }
 
-Comanda::Comanda(int nr, string m):suma_plata(0), nr_prod(0)
+Comanda::Comanda(int nr, string m)
 {
+    suma_plata = 0;
+    nr_prod = 0;
     magazin="";
     status="";
     magazin = m;
@@ -273,12 +275,12 @@ ostream &operator<<(ostream& out, const Client& cl)
     return out;
 }
 
-istream &operator>>(istream &in, Client &cl)
+istream &operator>>(istream &cit_fisier, Client &cl)
 {
-    getline(in,cl.nume_prenume);
-    getline(in,cl.adresa);
-    getline(in, cl.tel);
-    return in;
+    getline(cit_fisier,cl.nume_prenume);
+    getline(cit_fisier,cl.adresa);
+    getline(cit_fisier, cl.tel);
+    return cit_fisier;
 }
 
 int main()
@@ -286,19 +288,19 @@ int main()
 
     Client cnt;
     //cout<<"Introdu datele de client (Nume, Adresa, Telefon, fiecare pe cate un rand):\n";
-    in>>cnt; //supraincarcare operator citire
+    cit_fisier>>cnt; //supraincarcare operator citire
 
     //cout<<"1.Schimba date cont client\n2.Incepe cumparaturile\n";
     int x;
-    in>>x;
-    in.get();
+    cit_fisier>>x;
+    cit_fisier.get();
     if(x==1)
     {
         char tel[50], adr[50];
         cout<<"Noua adresa:\n";
-        in.getline(adr, 50);
+        cit_fisier.getline(adr, 50);
         cout<<"Noul telefon:\n";
-        in.getline(tel, 50);
+        cit_fisier.getline(tel, 50);
         cnt.editeaza_cont(adr, tel);
     }
 
@@ -306,17 +308,17 @@ int main()
     cnt.deschide_comanda();
     int nr;
     //cout<<"Introdu numarul de produse";
-    in>>nr;
-    in.get();
+    cit_fisier>>nr;
+    cit_fisier.get();
     for(int i=1; i<=nr; i++)
     {
         //cout<<"Adauga produsul "<<i<<" (Nume, Numar bucati, Pretul, fiecare pe cate o linie):\n";
         char n[50];
         int bucati;
         float pret;
-        in.getline(n, 50);
-        in>>bucati>>pret;
-        in.get();
+        cit_fisier.getline(n, 50);
+        cit_fisier>>bucati>>pret;
+        cit_fisier.get();
         Produs p(n, bucati, pret); //constr. init. cu param.
         cnt.getter_comanda()->adauga_produs(p);
     }
@@ -324,13 +326,13 @@ int main()
     cnt.getter_comanda()->afis_produse();
     //cout<<"Alege urmatoarul pas:\n"<<"1.Elimina un produs.\n"<<"2.Adauga inca o data un produs existent din comanda.\n";
     //cout<<"3.Finalizeaza comanda\n";
-    in>>x;
+    cit_fisier>>x;
     switch(x)
     {
     case 1:
         //cout<<"Alege nr produsului de eliminat:\n";
         int nr;
-        in>>nr;
+        cit_fisier>>nr;
         cnt.getter_comanda()->sterge_produs(nr);
         //cout<<endl;
         //cout<<endl;
@@ -341,7 +343,7 @@ int main()
 
     case 2:
         cout<<"Alege nr produsului de adaugat:\n";
-        in>>nr;
+        cit_fisier>>nr;
         Produs p2=cnt.getter_comanda()->get_prod(nr);//operator de atribuire
         Produs p3(p2); //constructor de copiere
         cout<<p2<<'\n'<<p3<<'\n';
