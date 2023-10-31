@@ -157,7 +157,7 @@ Comanda::Comanda()
 Comanda::Comanda(int nr, string m)
 {
     suma_plata = 0;
-    nr_prod = 0;
+    nr_prod = nr;
     magazin="";
     status="";
     magazin = m;
