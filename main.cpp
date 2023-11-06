@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <vector>
 
 using namespace std;
 ifstream cit_fisier("tastatura.txt");
@@ -96,7 +97,8 @@ class Comanda
     int nr_prod;
     string magazin, status;
     float suma_plata;
-    Produs p[20];
+    //Produs p[20];
+    vector<Produs*> pi;
 public:
     ///constructori initializare
     Comanda();
@@ -121,19 +123,19 @@ public:
     {
         return nr_prod;
     }
-    Produs get_prod(int i)
+    Produs* get_prod(int i)
     {
-        return p[i];
+        return pi[i];
     }
 
     void sterge_produs(int i);
-    void adauga_produs(Produs prod);
+    void adauga_produs(Produs* prod);
     void afis_suma_plata();
     void afis_produse();
 
     Produs operator[](int i) /// supraincarcare []
     {
-        return p[i];
+        return *pi[i];
     }
 
     ///operator afisare
@@ -164,11 +166,10 @@ Comanda::Comanda(int nr, string m)
     status = "Adauga produse";
 }
 
-void Comanda::adauga_produs(Produs prod)
+void Comanda::adauga_produs(Produs* prod)
 {
-    nr_prod++;
-    p[nr_prod]=prod;
-    suma_plata+=prod.get_pret()*prod.get_nr_bucati();
+    pi.push_back(prod);
+    suma_plata+=prod->get_pret()*prod->get_nr_bucati();
 }
 
 void Comanda::sterge_produs(int i)
@@ -177,13 +178,16 @@ void Comanda::sterge_produs(int i)
         cout<<"Produsul selectat nu exista in cos\n";
     else
     {
-        Produs prod=p[i];
-        suma_plata-=prod.get_pret()*prod.get_nr_bucati();
+        Produs* prod=pi[i];
+        suma_plata-=prod->get_pret()*prod->get_nr_bucati();
 
-        cout<<"Produsul "<<prod.get_nume()<<" a fost sters din comanda\n";
+        cout<<"Produsul "<<prod->get_nume()<<" a fost sters din comanda\n";
+        /*
         for(int j=i; j<nr_prod; j++)
             p[j]=p[j+1];
         nr_prod--;
+        */
+        pi.erase(pi.begin() + i);
     }
 }
 
@@ -191,7 +195,7 @@ void Comanda::afis_produse()
 {
     cout<<"Produsele din comanda:\n";
     for(int i=1; i<=nr_prod; i++)
-        cout<<i<<". "<<" "<<p[i]<<" ";
+        cout<<i<<". "<<" "<<pi[i]<<" ";
     cout<<'\n';
 }
 
@@ -205,21 +209,21 @@ void Comanda::afis_suma_plata()
 class Client
 {
     string nume_prenume, adresa, tel;
-    Comanda* com;
+    Comanda com;
 public:
     ///constructori initializare
     Client();
-    Client(string, string, string, Comanda*);
+    Client(string, string, string, Comanda);
     ///destructor
     ~Client() {
-        delete com;
+        //delete com;
     }
 
     void deschide_comanda();
     void finalizeaza_comanda();
     void editeaza_cont(string, string);
 
-    Comanda* getter_comanda()
+    Comanda& getter_comanda()
     {
         return com;
     }
@@ -236,15 +240,13 @@ Client::Client()
     nume_prenume="";
     adresa="";
     tel="";
-    com = new Comanda();
 
 }
-Client::Client(string np, string adr, string t, Comanda* cc)
+Client::Client(string np, string adr, string t, Comanda cc)
 {
     nume_prenume="";
     adresa="";
     tel="";
-    com = new Comanda();
     nume_prenume=np;
     adresa=adr;
     tel=t;
@@ -253,15 +255,14 @@ Client::Client(string np, string adr, string t, Comanda* cc)
 
 void Client::deschide_comanda()
 {
-    com->set_status("Comanda deschisa");
-    com->set_suma_plata();
-    cout<<" "<<com->get_status()<<endl;
+    com.set_status("Comanda deschisa");
+    com.set_suma_plata();
+    cout<<" "<<com.get_status()<<endl;
 }
 void Client::finalizeaza_comanda()
 {
     cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<endl;
-    com->afis_suma_plata();
-
+    com.afis_suma_plata();
 }
 void Client::editeaza_cont(string adresa, string tel)
 {
@@ -319,11 +320,11 @@ int main()
         cit_fisier.getline(n, 50);
         cit_fisier>>bucati>>pret;
         cit_fisier.get();
-        Produs p(n, bucati, pret); //constr. init. cu param.
-        cnt.getter_comanda()->adauga_produs(p);
+        Produs* p = new Produs(n, bucati, pret); //constr. init. cu param.
+        cnt.getter_comanda().adauga_produs(p);
     }
 
-    cnt.getter_comanda()->afis_produse();
+    cnt.getter_comanda().afis_produse();
     //cout<<"Alege urmatoarul pas:\n"<<"1.Elimina un produs.\n"<<"2.Adauga inca o data un produs existent din comanda.\n";
     //cout<<"3.Finalizeaza comanda\n";
     cit_fisier>>x;
@@ -333,7 +334,7 @@ int main()
         //cout<<"Alege nr produsului de eliminat:\n";
         int nr;
         cit_fisier>>nr;
-        cnt.getter_comanda()->sterge_produs(nr);
+        cnt.getter_comanda().sterge_produs(nr);
         //cout<<endl;
         //cout<<endl;
         //cout<<endl;
@@ -344,10 +345,10 @@ int main()
     case 2:
         cout<<"Alege nr produsului de adaugat:\n";
         cit_fisier>>nr;
-        Produs p2=cnt.getter_comanda()->get_prod(nr);//operator de atribuire
-        Produs p3(p2); //constructor de copiere
+        Produs* p2=cnt.getter_comanda().get_prod(nr);//operator de atribuire
+        Produs* p3(p2); //constructor de copiere
         cout<<p2<<'\n'<<p3<<'\n';
-        cnt.getter_comanda()->adauga_produs(p3);
+        cnt.getter_comanda().adauga_produs(p3);
 
         break;
     }
