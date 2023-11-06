@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <array>
 
 using namespace std;
 ifstream cit_fisier("tastatura.txt");
@@ -53,14 +54,12 @@ Produs::Produs()
 }
 Produs::Produs(string prod, float p, int nr)
 {
-    nume="";
     nume = prod;
     pret=p;
     nr_bucati=nr;
 }
 Produs::Produs(const Produs& p)  /// constructor de copiere
 {
-    nume="";
     this->nume = p.nume;
     this->pret=p.pret;
     this->nr_bucati=p.nr_bucati;
@@ -86,7 +85,8 @@ ostream &operator<<(ostream& out, const Produs &p)
 }
 istream &operator>>(istream &cit_fisier, Produs &p)
 {
-    getline(cit_fisier,p.nume);
+    //getline(cit_fisier,p.nume);
+    cit_fisier>>p.nume;
     cit_fisier>>p.nr_bucati>>p.pret;
     return cit_fisier;
 }
@@ -96,7 +96,7 @@ class Comanda
     int nr_prod;
     string magazin, status;
     float suma_plata;
-    Produs p[20];
+    array<Produs, 20> p;
 public:
     ///constructori initializare
     Comanda();
@@ -120,10 +120,6 @@ public:
     int get_nr_prod()
     {
         return nr_prod;
-    }
-    Produs get_prod(int i)
-    {
-        return p[i];
     }
 
     void sterge_produs(int i);
@@ -205,21 +201,19 @@ void Comanda::afis_suma_plata()
 class Client
 {
     string nume_prenume, adresa, tel;
-    Comanda* com;
+    Comanda com;
 public:
     ///constructori initializare
     Client();
-    Client(string, string, string, Comanda*);
+    Client(string, string, string, Comanda);
     ///destructor
-    ~Client() {
-        delete com;
-    }
+    ~Client() {}
 
     void deschide_comanda();
     void finalizeaza_comanda();
     void editeaza_cont(string, string);
 
-    Comanda* getter_comanda()
+    Comanda& getter_comanda()
     {
         return com;
     }
@@ -236,15 +230,13 @@ Client::Client()
     nume_prenume="";
     adresa="";
     tel="";
-    com = new Comanda();
 
 }
-Client::Client(string np, string adr, string t, Comanda* cc)
+Client::Client(string np, string adr, string t, Comanda cc)
 {
     nume_prenume="";
     adresa="";
     tel="";
-    com = new Comanda();
     nume_prenume=np;
     adresa=adr;
     tel=t;
@@ -253,15 +245,14 @@ Client::Client(string np, string adr, string t, Comanda* cc)
 
 void Client::deschide_comanda()
 {
-    com->set_status("Comanda deschisa");
-    com->set_suma_plata();
-    cout<<" "<<com->get_status()<<endl;
+    com.set_status("Comanda deschisa");
+    com.set_suma_plata();
+    cout<<" "<<com.get_status()<<endl;
 }
 void Client::finalizeaza_comanda()
 {
     cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<endl;
-    com->afis_suma_plata();
-
+    com.afis_suma_plata();
 }
 void Client::editeaza_cont(string adresa, string tel)
 {
@@ -277,9 +268,12 @@ ostream &operator<<(ostream& out, const Client& cl)
 
 istream &operator>>(istream &cit_fisier, Client &cl)
 {
-    getline(cit_fisier,cl.nume_prenume);
-    getline(cit_fisier,cl.adresa);
-    getline(cit_fisier, cl.tel);
+    //getline(cit_fisier,cl.nume_prenume);
+    cit_fisier>>cl.nume_prenume;
+    //getline(cit_fisier,cl.adresa);
+    cit_fisier>>cl.adresa;
+    //getline(cit_fisier, cl.tel);
+    cit_fisier>>cl.tel;
     return cit_fisier;
 }
 
@@ -320,10 +314,10 @@ int main()
         cit_fisier>>bucati>>pret;
         cit_fisier.get();
         Produs p(n, bucati, pret); //constr. init. cu param.
-        cnt.getter_comanda()->adauga_produs(p);
+        cnt.getter_comanda().adauga_produs(p);
     }
 
-    cnt.getter_comanda()->afis_produse();
+    cnt.getter_comanda().afis_produse();
     //cout<<"Alege urmatoarul pas:\n"<<"1.Elimina un produs.\n"<<"2.Adauga inca o data un produs existent din comanda.\n";
     //cout<<"3.Finalizeaza comanda\n";
     cit_fisier>>x;
@@ -333,7 +327,7 @@ int main()
         //cout<<"Alege nr produsului de eliminat:\n";
         int nr;
         cit_fisier>>nr;
-        cnt.getter_comanda()->sterge_produs(nr);
+        cnt.getter_comanda().sterge_produs(nr);
         //cout<<endl;
         //cout<<endl;
         //cout<<endl;
@@ -344,10 +338,10 @@ int main()
     case 2:
         cout<<"Alege nr produsului de adaugat:\n";
         cit_fisier>>nr;
-        Produs p2=cnt.getter_comanda()->get_prod(nr);//operator de atribuire
+        Produs p2=cnt.getter_comanda()[nr];//operator de atribuire
         Produs p3(p2); //constructor de copiere
         cout<<p2<<'\n'<<p3<<'\n';
-        cnt.getter_comanda()->adauga_produs(p3);
+        cnt.getter_comanda().adauga_produs(p3);
 
         break;
     }
