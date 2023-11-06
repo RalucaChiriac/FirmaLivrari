@@ -4,17 +4,17 @@
 #include <cstring>
 #include <array>
 
-using namespace std;
-ifstream cit_fisier("tastatura.txt");
+//using namespace std;
+std::ifstream cit_fisier("tastatura.txt");
 
 class Produs
 {
-    string nume;
+    std::string nume;
     float pret;
     int nr_bucati;
 public:
     ///constructori initializare
-    Produs(string, float, int);
+    Produs(std::string, float, int);
     Produs();
     ///destructor
     ~Produs()
@@ -34,7 +34,7 @@ public:
     {
         nr_bucati=x;
     }
-    string get_nume()
+    std::string get_nume()
     {
         return nume;
     }
@@ -42,9 +42,9 @@ public:
     Produs& operator=(Produs&);
 
     ///operator de afisare
-    friend ostream &operator<<(ostream&, const Produs&);
+    friend std::ostream &operator<<(std::ostream&, const Produs&);
     ///operator de citire
-    friend istream &operator>>(istream &, Produs &);
+    friend std::istream &operator>>(std::istream &, Produs &);
 };
 Produs::Produs()
 {
@@ -52,7 +52,7 @@ Produs::Produs()
     pret=0;
     nume="";
 }
-Produs::Produs(string prod, float p, int nr)
+Produs::Produs(std::string prod, float p, int nr)
 {
     nume = prod;
     pret=p;
@@ -76,14 +76,14 @@ Produs& Produs::operator=(Produs& ob)
     return *this;
 }
 
-ostream &operator<<(ostream& out, const Produs &p)
+std::ostream &operator<<(std::ostream& out, const Produs &p)
 {
-    cout<<"Nume: "<<p.nume<<endl;
-    cout<<"Nr. bucati: "<<p.nr_bucati<<" Pret: "<<p.pret<<endl;
-    cout<<endl;
+    std::cout<<"Nume: "<<p.nume<<std::endl;
+    std::cout<<"Nr. bucati: "<<p.nr_bucati<<" Pret: "<<p.pret<<std::endl;
+    std::cout<<std::endl;
     return out;
 }
-istream &operator>>(istream &cit_fisier, Produs &p)
+std::istream &operator>>(std::istream &cit_fisier, Produs &p)
 {
     cit_fisier>>p.nume;
     cit_fisier>>p.nr_bucati>>p.pret;
@@ -93,22 +93,22 @@ istream &operator>>(istream &cit_fisier, Produs &p)
 class Comanda
 {
     int nr_prod;
-    string magazin, status;
+    std::string magazin, status;
     float suma_plata;
-    array<Produs, 20> p;
+    std::array<Produs, 20> p;
 public:
     ///constructori initializare
     Comanda();
-    Comanda(int, string);
+    Comanda(int, std::string);
     ///destructor
     ~Comanda()
     {}
     ///get si set
-    string get_status()
+    std::string get_status()
     {
         return status;
     }
-    void set_status(string s)
+    void set_status(std::string s)
     {
         status = s;
     }
@@ -132,12 +132,12 @@ public:
     }
 
     ///operator afisare
-    friend ostream &operator<<(ostream&, const Comanda&);
+    friend std::ostream &operator<<(std::ostream&, const Comanda&);
 };
 
-ostream &operator<<(ostream& out, const Comanda& c)
+std::ostream &operator<<(std::ostream& out, const Comanda& c)
 {
-    cout<<"Comanda:"<<endl<<" "<<c.magazin<<" "<<c.status<<" "<<c.suma_plata<<endl;
+    std::cout<<"Comanda:"<<std::endl<<" "<<c.magazin<<" "<<c.status<<" "<<c.suma_plata<<std::endl;
     return out;
 }
 
@@ -149,7 +149,7 @@ Comanda::Comanda()
     status="";
 }
 
-Comanda::Comanda(int nr, string m)
+Comanda::Comanda(int nr, std::string m)
 {
     suma_plata = 0;
     nr_prod = nr;
@@ -169,13 +169,13 @@ void Comanda::adauga_produs(Produs prod)
 void Comanda::sterge_produs(int i)
 {
     if (i==0 || i>nr_prod)
-        cout<<"Produsul selectat nu exista in cos\n";
+        std::cout<<"Produsul selectat nu exista in cos\n";
     else
     {
         Produs prod=p[i];
         suma_plata-=prod.get_pret()*prod.get_nr_bucati();
 
-        cout<<"Produsul "<<prod.get_nume()<<" a fost sters din comanda\n";
+        std::cout<<"Produsul "<<prod.get_nume()<<" a fost sters din comanda\n";
         for(int j=i; j<nr_prod; j++)
             p[j]=p[j+1];
         nr_prod--;
@@ -184,33 +184,33 @@ void Comanda::sterge_produs(int i)
 
 void Comanda::afis_produse()
 {
-    cout<<"Produsele din comanda:\n";
+    std::cout<<"Produsele din comanda:\n";
     for(int i=1; i<=nr_prod; i++)
-        cout<<i<<". "<<" "<<p[i]<<" ";
-    cout<<'\n';
+        std::cout<<i<<". "<<" "<<p[i]<<" ";
+    std::cout<<'\n';
 }
 
 void Comanda::afis_suma_plata()
 {
     status = "Comanda procesata";
-    cout<<status<<". De plata: "<<suma_plata<<"lei\n";
+    std::cout<<status<<". De plata: "<<suma_plata<<"lei\n";
 }
 
 
 class Client
 {
-    string nume_prenume, adresa, tel;
+    std::string nume_prenume, adresa, tel;
     Comanda com;
 public:
     ///constructori initializare
     Client();
-    Client(string, string, string, Comanda);
+    Client(std::string, std::string, std::string, Comanda);
     ///destructor
     ~Client() {}
 
     void deschide_comanda();
     void finalizeaza_comanda();
-    void editeaza_cont(string, string);
+    void editeaza_cont(std::string, std::string);
 
     Comanda& getter_comanda()
     {
@@ -218,9 +218,9 @@ public:
     }
 
     ///operator afisare
-    friend ostream &operator<<(ostream&, const Client&);
+    friend std::ostream &operator<<(std::ostream&, const Client&);
     ///operator citire
-    friend istream &operator>>(istream &, Client &);
+    friend std::istream &operator>>(std::istream &, Client &);
 
 };
 
@@ -231,7 +231,7 @@ Client::Client()
     tel="";
 
 }
-Client::Client(string np, string adr, string t, Comanda cc)
+Client::Client(std::string np, std::string adr, std::string t, Comanda cc)
 {
     nume_prenume="";
     adresa="";
@@ -246,26 +246,26 @@ void Client::deschide_comanda()
 {
     com.set_status("Comanda deschisa");
     com.set_suma_plata();
-    cout<<" "<<com.get_status()<<endl;
+    std::cout<<" "<<com.get_status()<<std::endl;
 }
 void Client::finalizeaza_comanda()
 {
-    cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<endl;
+    std::cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<std::endl;
     com.afis_suma_plata();
 }
-void Client::editeaza_cont(string adresa, string tel)
+void Client::editeaza_cont(std::string adresa, std::string tel)
 {
     this->tel = tel;
     this->adresa = adresa;
 }
 
-ostream &operator<<(ostream& out, const Client& cl)
+std::ostream &operator<<(std::ostream& out, const Client& cl)
 {
-    cout<<"Client: "<<endl<<cl.nume_prenume<<" "<<cl.adresa<<" "<<cl.tel<<" "<<endl;
+    std::cout<<"Client: "<<std::endl<<cl.nume_prenume<<" "<<cl.adresa<<" "<<cl.tel<<" "<<std::endl;
     return out;
 }
 
-istream &operator>>(istream &cit_fisier, Client &cl)
+std::istream &operator>>(std::istream &cit_fisier, Client &cl)
 {
     cit_fisier>>cl.nume_prenume;
     cit_fisier>>cl.adresa;
@@ -287,14 +287,14 @@ int main()
     if(x==1)
     {
         char tel[50], adr[50];
-        cout<<"Noua adresa:\n";
+        std::cout<<"Noua adresa:\n";
         cit_fisier.getline(adr, 50);
-        cout<<"Noul telefon:\n";
+        std::cout<<"Noul telefon:\n";
         cit_fisier.getline(tel, 50);
         cnt.editeaza_cont(adr, tel);
     }
 
-    cout<<cnt<<"\nSe deschide comanda:"; //supraincarcare operator afisare
+    std::cout<<cnt<<"\nSe deschide comanda:"; //supraincarcare operator afisare
     cnt.deschide_comanda();
     int nr;
     //cout<<"Introdu numarul de produse";
@@ -332,16 +332,16 @@ int main()
          break;
 
     case 2:
-        cout<<"Alege nr produsului de adaugat:\n";
+        std::cout<<"Alege nr produsului de adaugat:\n";
         cit_fisier>>nr;
         Produs p2=cnt.getter_comanda()[nr];//operator de atribuire
         Produs p3(p2); //constructor de copiere
-        cout<<p2<<'\n'<<p3<<'\n';
+        std::cout<<p2<<'\n'<<p3<<'\n';
         cnt.getter_comanda().adauga_produs(p3);
 
         break;
     }
-    cout<<"Finalizare comanda\n";
+    std::cout<<"Finalizare comanda\n";
     cnt.finalizeaza_comanda();
 
     return 0;
