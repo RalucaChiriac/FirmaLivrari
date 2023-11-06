@@ -5,7 +5,7 @@
 #include <array>
 
 //using namespace std;
-std::ifstream cit_fisier("tastatura.txt");
+
 
 class Produs
 {
@@ -275,6 +275,7 @@ std::istream &operator>>(std::istream &cit_fisier, Client &cl)
 
 int main()
 {
+    std::ifstream cit_fisier("tastatura.txt");
 
     Client cnt;
     //cout<<"Introdu datele de client (Nume, Adresa, Telefon, fiecare pe cate un rand):\n";
