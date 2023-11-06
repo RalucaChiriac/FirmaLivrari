@@ -253,10 +253,10 @@ void Client::finalizeaza_comanda()
     std::cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<std::endl;
     com.afis_suma_plata();
 }
-void Client::editeaza_cont(std::string adresa, std::string tel)
+void Client::editeaza_cont(std::string adresa_temp, std::string tel_temp)
 {
-    this->tel = tel;
-    this->adresa = adresa;
+    this->tel = tel_temp;
+    this->adresa = adresa_temp;
 }
 
 std::ostream &operator<<(std::ostream& out, const Client& cl)
@@ -322,9 +322,9 @@ int main()
     {
     case 1:
         //cout<<"Alege nr produsului de eliminat:\n";
-        int nr;
-        cit_fisier>>nr;
-        cnt.getter_comanda().sterge_produs(nr);
+        int nr_temp;
+        cit_fisier>>nr_temp;
+        cnt.getter_comanda().sterge_produs(nr_temp);
         //cout<<endl;
         //cout<<endl;
         //cout<<endl;
