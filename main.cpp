@@ -348,9 +348,6 @@ int main()
         std::cout<<std::endl<<std::endl<<std::endl;
     }
 
-
     std::cout<<std::endl<<"Va multumim pentru utilizarea programului nostru!"<< std::endl;
-
-
     return 0;
 }
