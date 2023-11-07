@@ -3,6 +3,9 @@
 #include <string>
 #include <cstring>
 #include <array>
+#include <random>
+#include <chrono>
+#include <thread>
 
 
 class Produs
@@ -21,13 +24,10 @@ public:
     ///constructor copiere
     Produs(const Produs&);
     ///get si set
-    float get_pret()
+
+    float getter_pret_per_total()
     {
-        return pret;
-    }
-    int get_nr_bucati()
-    {
-        return nr_bucati;
+        return pret*nr_bucati;
     }
 
     std::string get_nume()
@@ -35,7 +35,7 @@ public:
         return nume;
     }
     ///operator de copiere
-    Produs& operator=(Produs&);
+    Produs& operator=(const Produs&);
 
     ///operator de afisare
     friend std::ostream &operator<<(std::ostream&, const Produs&);
@@ -53,7 +53,7 @@ Produs::Produs(const Produs& p)  /// constructor de copiere
     this->nr_bucati=p.nr_bucati;
 }
 
-Produs& Produs::operator=(Produs& ob)
+Produs& Produs::operator=(const Produs& ob)
 {
     if(this!=&ob)
     {
@@ -82,8 +82,7 @@ class Comanda
 {
     int nr_prod;
     std::string magazin, status;
-    float suma_plata;
-    std::array<Produs, 20> p;
+    std::array<Produs, 20> produse;
 public:
     ///constructori initializare
     Comanda();
@@ -100,19 +99,16 @@ public:
     {
         status = s;
     }
-    void set_suma_plata()
-    {
-        suma_plata=0;
-    }
 
+    void avanseaza_status();
     void sterge_produs(int i);
     void adauga_produs(Produs prod);
-    void afis_suma_plata();
     void afis_produse();
+    float calcul_suma_plata();
 
     Produs operator[](int i) /// supraincarcare []
     {
-        return p[i];
+        return produse[i];
     }
 
     ///operator afisare
@@ -121,21 +117,21 @@ public:
 
 std::ostream &operator<<(std::ostream& out, const Comanda& c)
 {
-    std::cout<<"Comanda:"<<std::endl<<" "<<c.magazin<<" "<<c.status<<" "<<c.suma_plata<<std::endl;
+    std::cout<<"Comanda:"<<std::endl<<" "<<c.magazin<<" "<<c.status<<std::endl;
     return out;
 }
 
-Comanda::Comanda():nr_prod(0), magazin(""), status(""), suma_plata(0)
+Comanda::Comanda():nr_prod(0), magazin(""), status("")
 {}
 
-Comanda::Comanda(int nr, const std::string& m):nr_prod(nr), magazin(m), status("Adauga produse"), suma_plata(0)
+Comanda::Comanda(int nr, const std::string& m):nr_prod(nr), magazin(m), status("Adauga produse")
 {}
 
 void Comanda::adauga_produs(Produs prod)
 {
     nr_prod++;
-    p[nr_prod]=prod;
-    suma_plata+=prod.get_pret()*prod.get_nr_bucati();
+    produse[nr_prod]=prod;
+    //suma_plata+=prod.get_pret()*prod.get_nr_bucati();
 }
 
 void Comanda::sterge_produs(int i)
@@ -144,12 +140,12 @@ void Comanda::sterge_produs(int i)
         std::cout<<"Produsul selectat nu exista in cos\n";
     else
     {
-        Produs prod=p[i];
-        suma_plata-=prod.get_pret()*prod.get_nr_bucati();
+        Produs prod=produse[i];
+        //suma_plata-=prod.get_pret()*prod.get_nr_bucati();
 
         std::cout<<"Produsul "<<prod.get_nume()<<" a fost sters din comanda\n";
         for(int j=i; j<nr_prod; j++)
-            p[j]=p[j+1];
+            produse[j]=produse[j+1];
         nr_prod--;
     }
 }
@@ -158,14 +154,38 @@ void Comanda::afis_produse()
 {
     std::cout<<"Produsele din comanda:\n";
     for(int i=1; i<=nr_prod; i++)
-        std::cout<<i<<". "<<" "<<p[i]<<" ";
+        std::cout<<i<<". "<<" "<<produse[i]<<" ";
     std::cout<<'\n';
 }
 
-void Comanda::afis_suma_plata()
+float Comanda::calcul_suma_plata()
 {
-    status = "Comanda procesata";
-    std::cout<<status<<". De plata: "<<suma_plata<<"lei\n";
+    float suma_finala = 0.0;
+    int maxim = produse.size();
+    for (int i=0;i<maxim;i++)
+    {
+        suma_finala+=produse[i].getter_pret_per_total();
+    }
+
+    return suma_finala;
+}
+
+void Comanda::avanseaza_status()
+{
+    if (status=="Comanda plasata")
+        set_status("depozit");
+    else
+        if (status=="depozit")
+            set_status("plecat din depozit");
+    else
+        if( status=="plecat din depozit")
+            set_status("oras destinatie");
+    else
+        if (status=="oras destinatie")
+            set_status("in livrare");
+    else
+        if (status=="in livrare")
+        set_status("Livrat!");
 }
 
 
@@ -181,7 +201,7 @@ public:
     ~Client() {}
 
     void deschide_comanda();
-    void finalizeaza_comanda();
+    void comanda_plasata();
     void editeaza_cont(const std::string&, const std::string&);
 
     Comanda& getter_comanda()
@@ -204,14 +224,13 @@ Client::Client(const std::string& np, const std::string& adr, const std::string&
 
 void Client::deschide_comanda()
 {
-    com.set_status("Comanda deschisa");
-    com.set_suma_plata();
+    com.set_status("Comanda noua");
     std::cout<<" "<<com.get_status()<<std::endl;
 }
-void Client::finalizeaza_comanda()
+void Client::comanda_plasata()
 {
+    getter_comanda().set_status("Comanda plasata");
     std::cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<std::endl;
-    com.afis_suma_plata();
 }
 void Client::editeaza_cont(const std::string& adresa_temp, const std::string& tel_temp)
 {
@@ -273,6 +292,7 @@ int main()
         Produs p(bucati, pret, nt); //constr. init. cu param.
         cnt.getter_comanda().adauga_produs(p);
     }
+    float suma_plata = cnt.getter_comanda().calcul_suma_plata();
 
     cnt.getter_comanda().afis_produse();
     //cout<<"Alege urmatoarul pas:\n"<<"1.Elimina un produs.\n"<<"2.Adauga inca o data un produs existent din comanda.\n";
@@ -285,6 +305,7 @@ int main()
         int nr_temp;
         cit_fisier>>nr_temp;
         cnt.getter_comanda().sterge_produs(nr_temp);
+        suma_plata-=cnt.getter_comanda()[nr_temp].getter_pret_per_total();
         //cout<<endl;
         //cout<<endl;
         //cout<<endl;
@@ -299,11 +320,37 @@ int main()
         Produs p3(p2); //constructor de copiere
         std::cout<<p2<<'\n'<<p3<<'\n';
         cnt.getter_comanda().adauga_produs(p3);
+        suma_plata+=cnt.getter_comanda()[nr+1].getter_pret_per_total();
 
         break;
     }
-    std::cout<<"Finalizare comanda\n";
-    cnt.finalizeaza_comanda();
+    std::cout<<std::endl;
+    cnt.comanda_plasata();
+    std::cout<<std::endl;
+    std::cout<<"Pret total al comenzii: "<<suma_plata<<" de lei"<<std::endl;
+
+    std::cout<<std::endl<<std::endl<<"Statusul actual al comenzii: Comanda plasata    (Va rugam nu inchideti programul fortat!)"<<std::endl;
+
+    for (int i=0;i<5;i++)
+    {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::default_random_engine generator(seed);
+        std::uniform_real_distribution<double> distribution(1.0, 1.5);
+
+        double randomTime = distribution(generator);
+        int randomMilliseconds = static_cast<int>(randomTime * 1000);
+
+        std::cout <<std::endl<<"Timp asteptare pentru noul status: " << randomTime << " secunde" << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(randomMilliseconds));
+        cnt.getter_comanda().avanseaza_status();
+        std::cout<<"Status actual: "<<cnt.getter_comanda().get_status();
+        std::cout<<std::endl<<std::endl<<std::endl;
+    }
+
+
+    std::cout<<std::endl<<"Va multumim pentru utilizarea programului nostru!"<< std::endl;
+
 
     return 0;
 }
