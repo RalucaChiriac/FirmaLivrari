@@ -176,7 +176,7 @@ class Client
 public:
     ///constructori initializare
     Client();
-    Client(const std::string&, const std::string&, const std::string&, Comanda);
+    Client(const std::string&, const std::string&, const std::string&, const Comanda&);
     ///destructor
     ~Client() {}
 
@@ -199,7 +199,7 @@ public:
 Client::Client():nume_prenume(""), adresa(""), tel("")
 {}
 
-Client::Client(const std::string& np, const std::string& adr, const std::string& t, Comanda cc):nume_prenume(np), adresa(adr), tel(t), com(cc)
+Client::Client(const std::string& np, const std::string& adr, const std::string& t, const Comanda& cc):nume_prenume(np), adresa(adr), tel(t), com(cc)
 {}
 
 void Client::deschide_comanda()
