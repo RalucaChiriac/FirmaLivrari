@@ -7,9 +7,10 @@
 
 class Produs
 {
-    std::string nume;
-    float pret;
     int nr_bucati;
+    float pret;
+    std::string nume;
+
 public:
     ///constructori initializare
     Produs(const std::string&, float, int);
@@ -44,9 +45,9 @@ public:
     ///operator de citire
     friend std::istream &operator>>(std::istream &, Produs &);
 };
-Produs::Produs():nr_bucati(0),pret(0),nume("")
+Produs::Produs():nr_bucati(0), pret(0), nume("")
 {}
-Produs::Produs(const std::string& prod, float p, int nr):nume(prod), pret(p), nr_bucati(nr)
+Produs::Produs(int nr, float p, const std::string& prod):nr_bucati(nr), pret(p), nume(prod)
 {}
 Produs::Produs(const Produs& p)  /// constructor de copiere
 {
@@ -127,10 +128,10 @@ std::ostream &operator<<(std::ostream& out, const Comanda& c)
     return out;
 }
 
-Comanda::Comanda():suma_plata(0), nr_prod(0), magazin(""), status("")
+Comanda::Comanda():nr_prod(0), magazin(""), status(""), suma_plata(0)
 {}
 
-Comanda::Comanda(int nr, const std::string& m):suma_plata(0), nr_prod(nr), magazin(m), status("Adauga produse")
+Comanda::Comanda(int nr, const std::string& m):nr_prod(nr), magazin(m), status("Adauga produse"), suma_plata(0)
 {}
 
 void Comanda::adauga_produs(Produs prod)
