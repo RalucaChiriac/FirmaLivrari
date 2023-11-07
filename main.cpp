@@ -4,8 +4,6 @@
 #include <cstring>
 #include <array>
 
-//using namespace std;
-
 
 class Produs
 {
@@ -14,7 +12,7 @@ class Produs
     int nr_bucati;
 public:
     ///constructori initializare
-    Produs(std::string, float, int);
+    Produs(const std::string&, float, int);
     Produs();
     ///destructor
     ~Produs()
@@ -46,18 +44,10 @@ public:
     ///operator de citire
     friend std::istream &operator>>(std::istream &, Produs &);
 };
-Produs::Produs()
-{
-    nr_bucati=0;
-    pret=0;
-    nume="";
-}
-Produs::Produs(std::string prod, float p, int nr)
-{
-    nume = prod;
-    pret=p;
-    nr_bucati=nr;
-}
+Produs::Produs():nr_bucati(0),pret(0),nume("")
+{}
+Produs::Produs(const std::string& prod, float p, int nr):nume(prod), pret(p), nr_bucati(nr)
+{}
 Produs::Produs(const Produs& p)  /// constructor de copiere
 {
     this->nume = p.nume;
@@ -99,7 +89,7 @@ class Comanda
 public:
     ///constructori initializare
     Comanda();
-    Comanda(int, std::string);
+    Comanda(int, const std::string&);
     ///destructor
     ~Comanda()
     {}
@@ -108,17 +98,13 @@ public:
     {
         return status;
     }
-    void set_status(std::string s)
+    void set_status(const std::string& s)
     {
         status = s;
     }
     void set_suma_plata()
     {
         suma_plata=0;
-    }
-    int get_nr_prod()
-    {
-        return nr_prod;
     }
 
     void sterge_produs(int i);
@@ -141,23 +127,11 @@ std::ostream &operator<<(std::ostream& out, const Comanda& c)
     return out;
 }
 
-Comanda::Comanda()
-{
-    suma_plata=0;
-    nr_prod=0;
-    magazin="";
-    status="";
-}
+Comanda::Comanda():suma_plata(0), nr_prod(0), magazin(""), status("")
+{}
 
-Comanda::Comanda(int nr, std::string m)
-{
-    suma_plata = 0;
-    nr_prod = nr;
-    magazin="";
-    status="";
-    magazin = m;
-    status = "Adauga produse";
-}
+Comanda::Comanda(int nr, const std::string& m):suma_plata(0), nr_prod(nr), magazin(m), status("Adauga produse")
+{}
 
 void Comanda::adauga_produs(Produs prod)
 {
@@ -204,13 +178,13 @@ class Client
 public:
     ///constructori initializare
     Client();
-    Client(std::string, std::string, std::string, Comanda);
+    Client(const std::string&, const std::string&, const std::string&, Comanda);
     ///destructor
     ~Client() {}
 
     void deschide_comanda();
     void finalizeaza_comanda();
-    void editeaza_cont(std::string, std::string);
+    void editeaza_cont(const std::string&, const std::string&);
 
     Comanda& getter_comanda()
     {
@@ -224,23 +198,11 @@ public:
 
 };
 
-Client::Client()
-{
-    nume_prenume="";
-    adresa="";
-    tel="";
+Client::Client():nume_prenume(""), adresa(""), tel("")
+{}
 
-}
-Client::Client(std::string np, std::string adr, std::string t, Comanda cc)
-{
-    nume_prenume="";
-    adresa="";
-    tel="";
-    nume_prenume=np;
-    adresa=adr;
-    tel=t;
-    com = cc;
-}
+Client::Client(const std::string& np, const std::string& adr, const std::string& t, Comanda cc):nume_prenume(np), adresa(adr), tel(t), com(cc)
+{}
 
 void Client::deschide_comanda()
 {
@@ -253,7 +215,7 @@ void Client::finalizeaza_comanda()
     std::cout<<"Detalii livrare:\n"<<"Client\n"<<nume_prenume<<", "<<adresa<<", "<<tel<<std::endl;
     com.afis_suma_plata();
 }
-void Client::editeaza_cont(std::string adresa_temp, std::string tel_temp)
+void Client::editeaza_cont(const std::string& adresa_temp, const std::string& tel_temp)
 {
     this->tel = tel_temp;
     this->adresa = adresa_temp;
