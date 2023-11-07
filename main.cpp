@@ -102,7 +102,7 @@ public:
 
     void avanseaza_status();
     void sterge_produs(int i);
-    void adauga_produs(Produs prod);
+    void adauga_produs(const Produs& prod);
     void afis_produse();
     float calcul_suma_plata();
 
@@ -127,7 +127,7 @@ Comanda::Comanda():nr_prod(0), magazin(""), status("")
 Comanda::Comanda(int nr, const std::string& m):nr_prod(nr), magazin(m), status("Adauga produse")
 {}
 
-void Comanda::adauga_produs(Produs prod)
+void Comanda::adauga_produs(const Produs& prod)
 {
     nr_prod++;
     produse[nr_prod]=prod;
