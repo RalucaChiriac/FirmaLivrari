@@ -13,7 +13,7 @@ class Produs
 
 public:
     ///constructori initializare
-    Produs(const std::string&, float, int);
+    Produs(int, float, const std::string&);
     Produs();
     ///destructor
     ~Produs()
@@ -29,10 +29,7 @@ public:
     {
         return nr_bucati;
     }
-    void set_nr_bucati(int x)
-    {
-        nr_bucati=x;
-    }
+
     std::string get_nume()
     {
         return nume;
@@ -267,13 +264,13 @@ int main()
     for(int i=1; i<=nr; i++)
     {
         //cout<<"Adauga produsul "<<i<<" (Nume, Numar bucati, Pretul, fiecare pe cate o linie):\n";
-        char n[50];
+        std::string nt;
         int bucati;
         float pret;
-        cit_fisier.getline(n, 50);
+        cit_fisier>>nt;
         cit_fisier>>bucati>>pret;
         cit_fisier.get();
-        Produs p(n, bucati, pret); //constr. init. cu param.
+        Produs p(bucati, pret, nt); //constr. init. cu param.
         cnt.getter_comanda().adauga_produs(p);
     }
 
